@@ -27,17 +27,19 @@ The following **required** functionality is completed:
  | --- | ---- | --- | ------- | -------- | 
 
 ### Groups Table 
- | GroupID | GroupName | DebtID | 
+ | GroupID~ | GroupName | DebtID | 
  | ------- | --------- | ------ |
 
 ### Debt Table 
- | DebtID | DebtAmount | 
+ | DebtID~| DebtAmount | 
  | ------ | ---------- |
 
 The logic here ^ is that a Member belongs to a Group that has a certain Amount of Debt from the Debt table
 When a Member joins a group, they can start making payments to that Groups debt, view their personal payments. 
 Groups of one individual are allowed, however you do need to have a GroupName to distinguish 
 the Group from a regular Member
+
+~ Represents PK 
 
 ## Instructions to run the program
 
