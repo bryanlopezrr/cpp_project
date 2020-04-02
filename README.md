@@ -2,9 +2,9 @@
 
 This is a basic console application that will allow to keep track of payments a group makes 
 to an entity. 
-IE: There is an outstanding balance of $5000. A group of people decide to partner to pay this debt together by
+<br>IE: There is an outstanding balance of $5000. A group of people decide to partner to pay this debt together by
     submitting $200 payments every month. The program will keep track of this group as a whole adding all the payments
-    but also making sure each indivuals contributions are recorded
+    but also making sure each indivuals contributions are recorded</br>
 
 Time spent: **?** hours spent in total
 
