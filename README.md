@@ -22,14 +22,17 @@ The following **required** functionality is completed:
 
 ## Table Implementation - Draft 
 
-Members Table
+### Members Table
  | ID~ | Name | DOB | GroupID | Payments | 
+ | --- | ---- | --- | ------- | -------- | 
 
-Groups Table 
+### Groups Table 
  | GroupID | GroupName | DebtID | 
+ | ------- | --------- | ------ |
 
-Debt Table 
+### Debt Table 
  | DebtID | DebtAmount | 
+ | ------ | ---------- |
 
 The logic here ^ is that a Member belongs to a Group that has a certain Amount of Debt from the Debt table
 When a Member joins a group, they can start making payments to that Groups debt, view their personal payments. 
