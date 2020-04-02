@@ -1,7 +1,7 @@
-# IRS Console Application - C++
+# Debt Console Application - C++
 
 This is a basic console application that will allow to keep track of payments a group makes 
-to the IRS. 
+to an entity. 
 
 Time spent: **?** hours spent in total
 
@@ -10,16 +10,16 @@ Time spent: **?** hours spent in total
 The following **required** functionality is completed:
 
 - [ ] User can add a new member to the program. 
-- [ ] The program will read in members from text file and their corresponding payments
+- [ ] The program will read in members from a database and their corresponding payments
 - [ ] User can remove a member from the program
-- [ ] The program will save members and their corresponding files into a text file 
+- [ ] The program will save members and their corresponding files into a database  
 - [ ] The program calculates total amount paid from all members 
 - [ ] User can validate all the money left to pay 
 
 ## Instructions to run the program
 
 - Navigate to file location
-- Compile the program using : g++ nameofFile.cpp
+- Compile the program using : g++ 'nameofFile'.cpp
 - Run the program by executing ./a.out 
 
 The following **bonus** features are implemented:
