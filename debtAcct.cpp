@@ -6,6 +6,8 @@
 
 using namespace std;
 
+void instructions();
+
 int main(){
 
     instructions();
