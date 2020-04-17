@@ -41,14 +41,11 @@ the Group from a regular Member
 
 ~ Represents PK 
 
-## Video Walkthrough 2
-<img src='http://g.recordit.co/sxhqXk1Ppr.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
-
 ### Screenshots of DB
-<img src = "./img/postgresLH.png" title="postgres" width="250" height="180"/>
+<img src = "./img/postgresLH.png" title="postgres" width="350" height="280"/>
 <img src = "./img/debtImage.png" title="debtTable" width="200" height="130"/>
-<img src = "./img/memberImage.png" title="memberTable" width="200" height="130"/>
-<img src = "./img/usersImage.png" title="usersTable" width="200" height="130"/>
+<img src = "./img/memberImage.png" title="memberTable" width="290" height="90"/>
+<img src = "./img/usersImage.png" title="usersTable" width="270" height="130"/>
 
 ## Instructions to run the program
 
@@ -62,5 +59,6 @@ The following **bonus** features are implemented:
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
+<img src='http://g.recordit.co/sxhqXk1Ppr.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 <img src='http://g.recordit.co/R0Uia1UCLl.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
