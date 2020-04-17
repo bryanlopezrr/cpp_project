@@ -42,10 +42,10 @@ the Group from a regular Member
 ~ Represents PK 
 
 ### Screenshots of DB
-<img src = "./img/postgresLH.png" title="postgres" width="390" height="300"/>
+<img src = "./img/postgresLH.png" title="postgres" width="490" height="400"/>
 <img src = "./img/debtImage.png" title="debtTable" width="200" height="130"/>
-<img src = "./img/memberImage.png" title="memberTable" width="310" height="90"/>
-<img src = "./img/usersImage.png" title="usersTable" width="295" height="130"/>
+<img src = "./img/memberImage.png" title="memberTable" width="380" height="90"/>
+<img src = "./img/usersImage.png" title="usersTable" width="365" height="130"/>
 
 ## Instructions to run the program
 
