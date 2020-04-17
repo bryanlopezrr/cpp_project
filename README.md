@@ -42,16 +42,16 @@ the Group from a regular Member
 ~ Represents PK 
 
 ### Screenshots of DB
-<img src = "./img/postgresLH.png" title="postgres" width="350" height="280"/>
+<img src = "./img/postgresLH.png" title="postgres" width="390" height="300"/>
 <img src = "./img/debtImage.png" title="debtTable" width="200" height="130"/>
-<img src = "./img/memberImage.png" title="memberTable" width="290" height="90"/>
-<img src = "./img/usersImage.png" title="usersTable" width="270" height="130"/>
+<img src = "./img/memberImage.png" title="memberTable" width="310" height="90"/>
+<img src = "./img/usersImage.png" title="usersTable" width="295" height="130"/>
 
 ## Instructions to run the program
 
 - Navigate to file location
-- Compile the program using : g++ 'nameofFile'.cpp
-- Run the program by executing ./a.out 
+- Compile the program using : $ g++ -std=c++17 'nameOfFile.cpp'  -lpqxx -lpq -o './nameOfEXE'
+- Run the program by executing ./nameOfEXE 
 
 The following **bonus** features are implemented:
 
