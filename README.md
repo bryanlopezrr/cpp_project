@@ -14,7 +14,7 @@ The following **required** functionality is completed:
 
 - [ ] User can add a new member to the program. 
 - [ ] Create a group - join a group - have a one man team 
-- [ ] The program will read in members from a database and their corresponding payments
+- [x] The program will read in members from a database and their corresponding payments
 - [ ] User can remove a member from the program
 - [ ] The program will save members and their corresponding files into a database  
 - [ ] The program calculates total amount paid from all members 
@@ -40,6 +40,15 @@ Groups of one individual are allowed, however you do need to have a GroupName to
 the Group from a regular Member
 
 ~ Represents PK 
+
+## Video Walkthrough 2
+<img src='http://g.recordit.co/sxhqXk1Ppr.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
+### Screenshots of DB
+<img src = "./img/postgresLH.png" title="postgres" width="250" height="180"/>
+<img src = "./img/debtImage.png" title="debtTable" width="200" height="130"/>
+<img src = "./img/memberImage.png" title="memberTable" width="200" height="130"/>
+<img src = "./img/usersImage.png" title="usersTable" width="200" height="130"/>
 
 ## Instructions to run the program
 
