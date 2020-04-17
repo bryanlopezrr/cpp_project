@@ -34,6 +34,11 @@ The following **required** functionality is completed:
  | DebtID~| DebtAmount | 
  | ------ | ---------- |
 
+### Users Table
+ | username | passwd | userID | 
+ | -------- | ------ | ------ |
+
+
 The logic here ^ is that a Member belongs to a Group that has a certain Amount of Debt from the Debt table
 When a Member joins a group, they can start making payments to that Groups debt, view their personal payments. 
 Groups of one individual are allowed, however you do need to have a GroupName to distinguish 
