@@ -99,13 +99,6 @@ int main(){
                     }else{
                         optionsForUsers();
                     }
-                        // This query returns the user that is logged in  
-                        /*
-                        pqxx::result userLoggedIn = wrk.exec("SELECT fname FROM users WHERE username = '" + username + "';");
-                        pqxx::row::reference uID = userLoggedIn[0][0];
-
-                        string userID = uID.c_str();
-                        */   
 
                         int amountPaid = 0;
                         int debtTotal = 0; 
@@ -126,7 +119,7 @@ int main(){
                         if(!isManager){
 
                             cin >> selection;
-                            if(toupper(selection) == 'X'){ cout << "Goodbye\n"; break;}
+                            if(toupper(selection) == 'X'){ cout << "Goodbye" << termcolor::cyan << "!!!" << "\n" << termcolor::reset; break;}
                             switch (toupper(selection))
                             {
                                 case 'V':{
@@ -138,10 +131,10 @@ int main(){
                                         }
                                     break;
                                 case '$':{
-                                            pqxx::result res = wrk.exec("SELECT payment_amount, payment_date FROM payments WHERE username = '" + username + "';");
-                                            cout << "Payment" << "\t\t" << "Date"<< endl;
+                                            pqxx::result res = wrk.exec("SELECT payment_amount, payment_date, paymentID FROM payments WHERE username = '" + username + "';");
+                                            cout << "Payment" << "\t\t" << "Date" <<"\t\t" << "PaymentID" << endl;
                                             for(int i = 0; i < res.size(); i++){
-                                                cout << termcolor::green << "$ " << termcolor::reset << res[i][0] << "\t\t" << res[i][1] << endl;
+                                                cout << termcolor::green << "$ " << termcolor::reset << res[i][0] << "\t\t" << res[i][1] << "\t\t "<<  res[i][2]  <<endl;
                                             }
 
                                         }
@@ -178,7 +171,7 @@ int main(){
                             string userToDelete = "";    
                             cin >> selection;
                             cin.ignore(1000, '\n');
-                            if(toupper(selection) == 'X'){ cout << "Goodbye\n"; break;} 
+                            if(toupper(selection) == 'X'){ cout << "Goodbye" << termcolor::cyan << "!!!" << "\n" << termcolor::reset; break;}
                             switch (toupper(selection))
                             {
                                 case 'V':{
@@ -238,8 +231,17 @@ int main(){
                                     }
                                     break;                                    
                                 case 'M':{
-                                    //changes DB 
-                                        cout << "Modify payments\n";
+                                        int modPayment =0, amountEntered = 0;
+                                        cout << "What payment ID do you want to modify: ";
+                                        cin >> modPayment; 
+                                        cin.ignore(1000, '\n');
+                                        cout << "What amount needs to be entered: ";
+                                        cin >> amountEntered;
+                                        cin.ignore(1000, '\n');
+
+                                        pqxx::result res = wrk.exec("UPDATE payments SET payment_amount = (" + to_string(amountEntered) + ") WHERE paymentID = " + to_string(modPayment) + ";");
+                                        wrk.commit();
+
                                     }
                                 
                                     break;                                                                                            
@@ -258,7 +260,7 @@ int main(){
                     break;
                 }
                 cout << "Logging out [ " + username << " ]" << endl;
-                sleep(3);
+                sleep(2);
                 clearScreen();
                 break;
             }
@@ -309,7 +311,11 @@ int main(){
 
             //if query is succesful == return Account succesful and go back to the top 
             //else some error occurred exit program 
+            string debt ="";
+            cout << "\nHow much is your debt: ";
+            cin >> debt; 
             pqxx::result res = wrk.exec("INSERT INTO users(username, password, fname, lname) VALUES('" + username + "', '" + password + "', '" + tokenizedName[0] + "', '" + tokenizedName[1] + "')");
+            res = wrk.exec("INSERT INTO debt_details(username, debtamount) VALUES('" + username + "', " + debt + ");");
             wrk.commit();
 
             if(res.size() == 0){
