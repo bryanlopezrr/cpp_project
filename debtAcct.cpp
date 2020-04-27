@@ -35,6 +35,7 @@ void welcomeView();
 void optionsForUsers();
 void managerOptions();
 void clearScreen();
+void logOperation(string, string);
 int getch(void);
 string passwordFunction(char* password);
 
@@ -128,6 +129,7 @@ int main(){
                                             cout << termcolor::green << "$ "<< termcolor::reset << res[0][0] << endl << endl;
 
                                             debtTotal = stoi((res[0][0]).c_str());
+                                            logOperation(username, "View debt");
                                         }
                                     break;
                                 case '$':{
@@ -136,16 +138,19 @@ int main(){
                                             for(int i = 0; i < res.size(); i++){
                                                 cout << termcolor::green << "$ " << termcolor::reset << res[i][0] << "\t\t" << res[i][1] << "\t\t "<<  res[i][2]  <<endl;
                                             }
+                                            logOperation(username, "Show all payments");
 
                                         }
                                     break;
                                 case 'P':{
                                             cout << "Amount Paid\n";
                                             cout << termcolor::green << "$ " << termcolor::reset << amountPaid << endl;
+                                            logOperation(username, "Total paid");
                                         }   
                                     break;
                                 case 'O':{
                                             optionsForUsers();  
+                                            logOperation(username, "View options");
                                         }   
                                     break;                                
                                 case 'M':{
@@ -158,6 +163,7 @@ int main(){
                                             pqxx::result res = wrk.exec("INSERT INTO payments(username, payment_amount) VALUES('" + username + "', " + to_string(payment) +");"); 
                                             res = wrk.exec("UPDATE debt_details SET debtamount = (" + to_string(debtTotal - payment) + ") WHERE username = '" + username + "';");
                                             wrk.commit();
+                                            logOperation(username, "Make payment");
                                         }   
                                     break;    
                                 default:
@@ -180,6 +186,7 @@ int main(){
                                          for(int i = 0; i < res.size(); i++){
                                              cout << setw(10) << res[i][0] << "\t" << setw(10) << res[i][1] << "\t" << setw(10) << termcolor::green << "$ " <<  termcolor::reset <<res[i][2] << endl;
                                          }
+                                         logOperation(username, "View users");
                                     }
                                     break;
                                 case 'D':{
@@ -207,7 +214,7 @@ int main(){
                                         else{
                                             cout << "User does not exist\n"; 
                                         }
-
+                                        logOperation(username, "Delete users");
                                     }
                                     break;
                                 case 'R':{
@@ -216,6 +223,7 @@ int main(){
                                         for(int i = 0; i < res.size(); i++){
                                             cout << setw(15) << res[i][0] << "\t" << setw(10) << termcolor::green <<  "$ " <<  termcolor::reset << res[i][1] << "\t"  << res[i][2] << endl;
                                         }
+                                        logOperation(username, "View recent payments");
                                     }
                                     break;
                                 case 'O':{
@@ -230,6 +238,7 @@ int main(){
                                         cout << "    |//////////////|___________[ ]   !  T |" << endl;
                                         cout << "    `--------------'           ) (      | !" << endl;
                                         cout << "                               '-'      !" << endl <<termcolor::reset;
+                                        logOperation(username, "Change accounts");
                                     }
                                     break;                                    
                                 case 'M':{
@@ -244,6 +253,8 @@ int main(){
                                         pqxx::result res = wrk.exec("UPDATE payments SET payment_amount = (" + to_string(amountEntered) + ") WHERE paymentID = " + to_string(modPayment) + ";");
                                         wrk.commit();
 
+                                        logOperation(username, "Modify payments");
+
                                     }
                                 
                                     break; 
@@ -255,10 +266,22 @@ int main(){
 
                                         pqxx::result res = wrk.exec("UPDATE users SET ismanager = (true) WHERE username = '" + userUpg + "';");
                                         wrk.commit();
+                                        logOperation(username, "Upgrade account");
 
                                     }
                                 
-                                    break;                                                                                                                               
+                                    break; 
+                                case 'L':{
+                                        pqxx::result res = wrk.exec("SELECT * FROM loginfo ORDER BY time DESC LIMIT 10;");
+                                        
+                                        cout << "Username " << setw(15) << "\t" << "Timestamp" << setw(32) << "Operation" << endl;
+                                        for(int i = 0; i < res.size(); i++){
+                                            cout << res[i][0] << setw(15) << "\t" << res[i][1] << "\t" << res[i][2] << endl;
+                                        }
+                                        logOperation(username, "Open logs");
+                                    }
+                                
+                                    break;                                                                                                                                                                     
                                 default:
                                     cout << "Incorrect input\n\n";
                                     break;
@@ -334,6 +357,7 @@ int main(){
 
             if(res.size() == 0){
                 cout << termcolor::green << "\n\n * * * ACCOUNT CREATED ^_^ * * *\n" << termcolor::reset;
+                logOperation(username, "Create new account");
             }
             else{
                 cout << termcolor::red << "\nAn error occurred. Try again\n" << termcolor::reset;
@@ -372,7 +396,7 @@ void managerOptions(){
     cout << "| ------------------- | ------------------ | ----------- |\n";
     cout << "| R - Recent payments | A - Account help   | O - Options |\n";
     cout << "| ------------------- | ------------------ | ----------- |\n";
-    cout << "| M - Modify payments | U - Upgrade acct   |             |\n";
+    cout << "| M - Modify payments | U - Upgrade acct   | L - Log     |\n";
     cout << "==========================================================\n"<< termcolor::reset;
 }
 
@@ -381,6 +405,20 @@ void clearScreen(){
     system("clear");
 }
 
+//This function will log operations taking place during the runtime of the application 
+void logOperation( string who, string action){
+        
+        string connection_string = "host=127.0.0.1 port=5432 dbname=postgres user=postgres password=password";
+        pqxx::connection con(connection_string.c_str());
+        pqxx::work wrk(con); 
+
+        
+        pqxx::result res = wrk.exec("INSERT INTO loginfo(username, time, operation) VALUES('" + who + "', CURRENT_TIMESTAMP , '" + action + "');");
+        wrk.commit();
+
+}
+
+//This password function obfuscates the input when typing in password to the terminal - not a required function but useful 
 string passwordFunction(char* password){
         char temp =' '; 
         string strPassword = "";
@@ -400,7 +438,7 @@ string passwordFunction(char* password){
         strPassword.pop_back();
         return strPassword;
 }
-
+//This function had to be implemented - imported to get only one charater at a time because C++ has revised this C function for security 
 int getch(void){
 	struct termios oldt, newt;
 	int ch;
