@@ -1,3 +1,14 @@
+--- THIS FILE IS JUST A REPRESENTAITION OF SOME OF THE QUERIES I RAN TO TEST THE PROGRAM 
+
+
+----- TO UPLOAD THE CSV INTO THE DB RUN THE FOLLOWING: --------------------------------------
+\COPY users(username, password, fname, lname, ismanager) FROM '\The\path\to\the\CSV\file\in\your\computer.csv' WITH delimiter ',' CSV HEADER;
+\COPY payments(username, payment_amount, payment_date) FROM '\The\path\to\the\CSV\file\in\your\computer.csv' WITH delimiter ',' CSV HEADER;
+\COPY debt_details(username, debtamount) FROM '\The\path\to\the\CSV\file\in\your\computer.csv' WITH delimiter ',' CSV HEADER;
+
+-----------#########################################################-----------------------------------------------
+
+
 create table users(userID serial primary key, username varchar(18),
 password varchar(18), fname varchar(18), lname varchar(18));
 select * from users;
@@ -41,3 +52,6 @@ WHERE username = 'bobbyj';
 select fname, lname, debtamount from users u 
 inner join debt_details d on u.username = d.username
 where ismanager = false;
+
+
+\copy payments(username, payment_amount, payment_date) from '/Users/bryanlopez/Desktop/debt_details.csv' with delimiter ',' csv header;

@@ -175,7 +175,7 @@ int main(){
                             switch (toupper(selection))
                             {
                                 case 'V':{
-                                         pqxx::result res = wrk.exec("SELECT fname, lname, debtamount FROM users u INNER JOIN debt_details d ON u.username = d.username WHERE ismanager = false;"); 
+                                         pqxx::result res = wrk.exec("SELECT fname, lname, debtamount FROM users u INNER JOIN debt_details d ON u.username = d.username WHERE ismanager IS NOT true;"); 
                                          cout  << "First Name \t" << setw(10) << "Last Name " << setw(25) << "Debt Amount\n";
                                          for(int i = 0; i < res.size(); i++){
                                              cout << setw(10) << res[i][0] << "\t" << setw(10) << res[i][1] << "\t" << setw(10) << termcolor::green << "$ " <<  termcolor::reset <<res[i][2] << endl;
@@ -183,7 +183,6 @@ int main(){
                                     }
                                     break;
                                 case 'D':{
-                                    //changes DB
                                         cout << termcolor::red << "Which user do you want to delete? "<< termcolor::reset;
                                         cin >> userToDelete;
                                         cin.ignore(1000, '\n');
@@ -192,6 +191,9 @@ int main(){
                                         if(res.size() == 1)
                                         {
                                             pqxx::result res = wrk.exec("DELETE FROM users WHERE username = '" + userToDelete + "';");
+                                            res = wrk.exec("DELETE FROM payments WHERE username = '" + userToDelete + "';");
+                                            res = wrk.exec("DELETE FROM debt_details WHERE username = '" + userToDelete + "';");
+
                                             cout << "Are you sure? (Y/N)\n";
                                             cin >> response; 
                                             cin.ignore(1000, '\n');
@@ -244,7 +246,19 @@ int main(){
 
                                     }
                                 
-                                    break;                                                                                            
+                                    break; 
+                                case 'U':{
+                                        string userUpg ="";
+                                        cout << "What user do you want to upgrade -> manager: ";
+                                        cin >> userUpg; 
+                                        cin.ignore(1000, '\n');
+
+                                        pqxx::result res = wrk.exec("UPDATE users SET ismanager = (true) WHERE username = '" + userUpg + "';");
+                                        wrk.commit();
+
+                                    }
+                                
+                                    break;                                                                                                                               
                                 default:
                                     cout << "Incorrect input\n\n";
                                     break;
@@ -344,7 +358,7 @@ void welcomeView(){
 
 
 void optionsForUsers(){
-    cout << termcolor::on_grey << "\n===================================================\n";
+    cout << termcolor::on_grey << "\n====================================================\n";
     cout << "| V - View balance | P - Paid amount | X - Exit    |\n";
     cout << "| ---------------- | --------------- | ----------- |\n";
     cout << "| $ - All payments | M - Make payment| O - Options |\n";
@@ -358,7 +372,7 @@ void managerOptions(){
     cout << "| ------------------- | ------------------ | ----------- |\n";
     cout << "| R - Recent payments | A - Account help   | O - Options |\n";
     cout << "| ------------------- | ------------------ | ----------- |\n";
-    cout << "| M - Modify payments |                    |             |\n";
+    cout << "| M - Modify payments | U - Upgrade acct   |             |\n";
     cout << "==========================================================\n"<< termcolor::reset;
 }
 
