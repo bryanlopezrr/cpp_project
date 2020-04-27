@@ -28,24 +28,25 @@
 
 using namespace std;
 
-void instructions();
+void welcomeView();
 void optionsForUsers();
+void managerOptions();
 void clearScreen();
 int getch(void);
 string passwordFunction(char* password);
 
 int main(){
 
-
     while(1){
-            //Connection string to local database - Postgres
-            string connection_string = "host=localhost port=5432 dbname=postgres user=postgres password=password";
-            pqxx::connection con(connection_string.c_str());
-            pqxx::work wrk(con);    
 
+            //Connection string to local database - Postgres
+            string connection_string = "host=127.0.0.1 port=5432 dbname=postgres user=postgres password=password";
+            pqxx::connection con(connection_string.c_str());
+            pqxx::work wrk(con);  
+  
 
             //--- PROOF OF CONCEPT ----
-            // pqxx::result res = wrk.exec("SELECT * FROM debtDetails");
+            // pqxx::result res = wrk.exec("SELECT * FROM debt_details");
             // if(res.size() < 1){
             //     cout << "An error has occurred\n";
             //     return 1;
@@ -58,17 +59,19 @@ int main(){
             // }
             
 
-
         //ADDING SWITCH STAMENT FOR THE OPTIONS: 
         // clearScreen();
-        instructions();
+        welcomeView();
         char response = ' ';
         string username = " ", password = " "; 
         cin >> response;
 
         char password_ch[32];
-        if( toupper(response) == 'Y'){
+        if( toupper(response) == 'Q'){break;}
+        else if( toupper(response) == 'Y'){
             while(1){
+
+                bool isManager = false; 
                 cout << "Login in with your credentials: \n";
                 cout << "Username: ";
                 cin >> username; 
@@ -79,51 +82,100 @@ int main(){
                 // cin.ignore();
                 password = passwordFunction(password_ch);    
 
-                pqxx::result res = wrk.exec("SELECT * FROM userInfo WHERE username = '" + username + "' AND passwd = '" + password + "'");
+                pqxx::result res = wrk.exec("SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'");
                 if(res.size() == 1){
                     char selection = ' ';
                     clearScreen();
-                    cout << "\n -- WELCOME BACK -- \n";
+                    cout << "\n -- WELCOME BACK -- \t\t[ " + username +  " ]\n";
                     cout << "What would you like to do?:\n";            
-                    optionsForUsers();
-
+                    
+                    string t = res[0][5].c_str();
+                    if(t == "t"){
+                        managerOptions(); 
+                        isManager = true; 
+                    }else{
+                        optionsForUsers();
+                    }
                         // This query returns the user that is logged in  
-                        pqxx::result userLoggedIn = wrk.exec("SELECT * FROM userInfo WHERE username = '" + username + "';");
-                        pqxx::row::reference uID = userLoggedIn[0][2];
+                        /*
+                        pqxx::result userLoggedIn = wrk.exec("SELECT fname FROM users WHERE username = '" + username + "';");
+                        pqxx::row::reference uID = userLoggedIn[0][0];
 
                         string userID = uID.c_str();
+                        */   
+
+                        int amountPaid = 0;
+                        int debtTotal = 0; 
+                        pqxx::result res = wrk.exec("SELECT debtamount FROM debt_details d WHERE d.username = '"+ username + "';");
+                        debtTotal = stoi((res[0][0]).c_str());
+
+                        res = wrk.exec("SELECT payment_amount, payment_date FROM payments WHERE username = '" + username + "';");
+                        for(int i = 0; i < res.size(); i++){
+                            amountPaid += stoi((res[i][0].c_str()));
+                        }
+
                     while(1){
+                        //Connection string to local database - Postgres ---- RECONNECTING HERE because of commit to DB
+                        string connection_string = "host=127.0.0.1 port=5432 dbname=postgres user=postgres password=password";
+                        pqxx::connection con(connection_string.c_str());
+                        pqxx::work wrk(con);  
+
                         cin >> selection;
                         if(toupper(selection) == 'X'){ cout << "Goodbye\n"; break;}
                         switch (toupper(selection))
                         {
                             case 'V':{
-                                        pqxx::result res = wrk.exec("SELECT debtamount, debtdetails.debtID FROM debtdetails INNER JOIN members ON debtdetails.debtID =" + userID + "LIMIT 1;");
+                                        pqxx::result res = wrk.exec("SELECT debtamount FROM debt_details d WHERE d.username = '"+ username + "';");
                                         cout << "Balance: \n";
-                                        for (int i = 0; i < res.size(); i++){
-                                            cout << "$" << res[i][0] << endl << endl;
-                                        }
+                                        cout << "$ " << res[0][0] << endl << endl;
+
+                                        debtTotal = stoi((res[0][0]).c_str());
                                      }
                                 break;
-                            case 'P':
-                                cout << "PAID $--- HARD CODED FOR NOW \n\n";
+                            case '$':{
+                                        pqxx::result res = wrk.exec("SELECT payment_amount, payment_date FROM payments WHERE username = '" + username + "';");
+                                        cout << "Payment" << "\t\t" << "Date"<< endl;
+                                        for(int i = 0; i < res.size(); i++){
+                                            cout << "$ " << res[i][0] << "\t\t" << res[i][1] << endl;
+                                        }
+
+                                    }
                                 break;
-                            case '$':
-                                cout << "MONEYYYYYY\n";
+                            case 'P':{
+                                        cout << "Amount Paid\n";
+                                        cout << "$ " << amountPaid << endl;
+                                     }   
                                 break;
+                            case 'O':{
+                                        optionsForUsers();  
+                                     }   
+                                break;                                
+                            case 'M':{
+                                        int payment = 0; 
+                                        cout << "Enter amount to pay: \n";
+                                        cin >> payment;
+                                        cin.ignore(1000, '\n');
+                                        amountPaid += payment;
+
+                                        pqxx::result res = wrk.exec("INSERT INTO payments(username, payment_amount) VALUES('" + username + "', " + to_string(payment) +");"); 
+                                        res = wrk.exec("UPDATE debt_details SET debtamount = (" + to_string(debtTotal - payment) + ") WHERE username = '" + username + "';");
+                                        wrk.commit();
+                                     }   
+                                break;    
                             default:
                                 cout << "Incorrect input\n\n";
                                 break;
                         }
+
                         
                     }
                 }
                 else{
                     clearScreen();
-                    cout << "\n -- NOT FOUND -- \n";
+                    cout << "\n -- NOT FOUND | WRONG UNAME & PASS -- \n";
                     break;
                 }
-                cout << "Logging out " + username << endl;
+                cout << "Logging out [ " + username << " ]" << endl;
                 sleep(3);
                 clearScreen();
                 break;
@@ -131,24 +183,33 @@ int main(){
         }  
         else{
             clearScreen();
-            string fullName =" ";
+            cin.ignore(1000, '\n');
+
+            string fullName ="";
             /*
             cout << "Goodbye \n";
             break;*/
             cout << "\n=======================================\n" 
                  << "          CREATE AN ACCOUNT:            \n"
                  <<"=======================================\n"; 
-                 
+                                
             cout << "Enter first name, last name \n";
             getline(cin, fullName);
-            cin.ignore(1000, '\n');
-    
+
+            vector<string> tokenizedName;
+            string name;
+            istringstream is(fullName);
+                while (getline(is, name, ' ')){
+                    tokenizedName.push_back(name);
+                }
+                
+            // cin.ignore(1000, '\n');
             cout << "Choose a username: ";
             cin >> username; 
             cin.ignore(1000, '\n');
             //Logic to check if user name exists
             while(1){
-                pqxx::result res = wrk.exec("SELECT * FROM userInfo WHERE username = '" + username + "'");
+                pqxx::result res = wrk.exec("SELECT * FROM users WHERE username = '" + username + "'");
                 if(res.size() == 1)
                 {
                     cout << "User already exists. Try a different one\n";
@@ -166,18 +227,18 @@ int main(){
 
             //if query is succesful == return Account succesful and go back to the top 
             //else some error occurred exit program 
-            
-            pqxx::result res = wrk.exec("INSERT INTO userinfo(username, passwd, \"userID\") VALUES('" + username + "', '" + password + "', 7372)");
+            pqxx::result res = wrk.exec("INSERT INTO users(username, password, fname, lname) VALUES('" + username + "', '" + password + "', '" + tokenizedName[0] + "', '" + tokenizedName[1] + "')");
             wrk.commit();
 
             if(res.size() == 0){
-                cout << "\n *** ACCOUNT CREATED ^_^ ***\n";
+                cout << "\n\n *** ACCOUNT CREATED ^_^ ***\n";
             }
             else{
                 cout << "\nAn error occurred. Try again\n";
             }
-            sleep(3);
+            sleep(2);
             clearScreen();
+            tokenizedName.clear();
         // ............................................................
         } 
     }
@@ -185,20 +246,30 @@ int main(){
     return 0; 
 }
 
-void instructions(){
+void welcomeView(){
     cout << "\n=======================================\n";
     cout << "      DEBT: ACCOUNTABILITY PROGRAM\n";
     cout << "=======================================\n\n";
-    cout << "Do you have an account with us already? (Y/N):\n";
+    cout << "Do you have an account with us already? (Y/N): \t\t Type Q - to quit the program\n";
 }
 
 
 void optionsForUsers(){
-    cout << "\n================================================\n";
-    cout << "| V - View balance | P - Paid amount | X - Exit |\n";
-    cout << "| ---------------- | --------------- | -------- |\n";
-    cout << "| $ - All payments |                 |          |\n";
-    cout << "=================================================\n";
+    cout << "\n===================================================\n";
+    cout << "| V - View balance | P - Paid amount | X - Exit    |\n";
+    cout << "| ---------------- | --------------- | ----------- |\n";
+    cout << "| $ - All payments | M - Make payment| O - Options |\n";
+    cout << "====================================================\n";
+}
+
+void managerOptions(){
+    cout << "\n=========================================================\n";
+    cout << "| V - View members    | D - Delete members | X - Exit    |\n";
+    cout << "| ------------------- | ------------------ | ----------- |\n";
+    cout << "| R - Recent payments | A - Account help   | O - Options |\n";
+    cout << "| ------------------- | ------------------ | ----------- |\n";
+    cout << "| M - Modify payments |                    |             |\n";
+    cout << "==========================================================\n";
 }
 
 void clearScreen(){
