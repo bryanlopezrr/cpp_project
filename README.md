@@ -38,10 +38,16 @@ The following **required** functionality is completed:
  | username~ | debtamount | 
  | --------- | ---------- |
 
+### Log Info Table
+ | username | time | operation |
+ | -------- | ---- | --------- |
+
 The logic here ^ is that a Users  has an outstanding debt [IE: $1000] and they make 
 payments to that debt. The payments are recorded in the Payments table with a datestamp and also an identifier
 as proof of completed submission. The Debt table has the final debt the user owes but the program will update it
 before quitting to make sure everything is saved accordingly.
+
+The log info table just provides a record of previous transactions that took place
 
 ~ Represents PK 
 
